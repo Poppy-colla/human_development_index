@@ -90,10 +90,56 @@ hdi_summary_low %>%
 #              TASK 2                 #
 #######################################
 
+file <- "http://www.ndbc.noaa.gov/view_text_file.php?filename=44025h2011.txt.gz&dir=data/historical/stdmet/"
 
+# Viewing the first line to help decide how to read in the data 
+readLines(file, n = 1)
+#[1] "#YY  MM DD hh mm WDIR WSPD GST  #WVHT   DPD   APD MWD   PRES  ATMP  #WTMP  DEWP  VIS  TIDE"
 
+readLines(file, n = 2)
+#[2] "#yr  mo dy hr mn degT m/s  m/s   #m   sec   sec degT   hPa  degC  degC  # degC   mi    ft"
+readLines(file, n = 3)
+#[3] "2010 12 31 23 50 222  7.2  8.5  0.75  4.55  3.72 203 1022.2   6.9   6.7   3.5 99.0 99.00"
 
+# Shows that the first line gives the column name, the second the units and the third is where the data begins 
 
+# So, read in the data as shown:
+
+buoy44025 <- read_table(file, 
+                        col_names = FALSE,
+                        skip = 2)
+# col = FALSE means don't use the given column names (why just have x1, x2...) skip = 2 means skip first two rows, so starting with data 
+
+# QUESTION 2 #
+
+# Read in the variable names from the first line, removing the #
+
+measure <- scan(file,
+                nlines = 1,
+                what = character()) %>%
+  str_remove("#")
+
+# Read in the units from the second line and remove the #
+# Replace the / with _per_ as / is a special character 
+
+units <- scan(file,
+              skip = 1,
+              nlines = 1,
+              what = character()) %>%
+  str_remove("#") %>%
+  str_replace("/", "_per_")
+
+# Paste the variable name and its units together for the column name 
+
+names(buoy44025) <- paste(measure, units, sep = "_")
+
+names(buoy44025)
+
+#######################################
+#              TASK 3                 #
+#######################################
+
+# ON PROTID SCRIPT #
 
 
 
